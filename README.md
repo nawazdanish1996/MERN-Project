@@ -12,15 +12,21 @@ Practice on MongoDB, Express, React, & Node Projects
 
 ## Tech Stack Used
 
-**Client:** React, CSS, Bootstrap
+**Client:** HTML, CSS, Bootstrap, React
 
 **Server:** Node, Express
 
 **Database:** MongoDB
 
+**API Testing:** Postman
 
-## npm packages used:
+## Helpful documents
+- https://mongoosejs.com/docs/queries.html
+
+## npm frequently packages used:
 - npm i express mongoose nodemon
+- npm install dotenv --save
+- npm i validator
 - 
 
 
