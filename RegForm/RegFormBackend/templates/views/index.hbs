@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Reg Form</title>
+</head>
+<body>
+    {{>navbar}}
+
+    <form action="/" method="post">
+        <input id="name" name="name" type="text" placeholder="Name">
+        <br>
+        <input id="username" name="username" type="text" placeholder="Username">
+        <br>
+        <input id="password" name="password" type="text" placeholder="Password">
+        <br>
+        <input id="verfy-password" name="verify_password" type="text" placeholder="Re-Type Password">
+        <br>
+        <input id="formOne" type="submit" value="Submit">
+        <input type="reset" value="Reset">
+    </form>
+    
+    <br>
+    
+    <form>
+        <input id="loginUsername" type="text" placeholder="Username">
+        <br>
+        <input id="LoginPassword" type="text" placeholder="Password">
+        <br>
+        <input id="formTwo" type="submit" value="Login">
+        <input type="reset" value="Reset">
+    </form>
+
+    {{>footer}}
+
+
+    <script src="index.js"></script>
+</body>
+</html>
