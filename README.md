@@ -28,6 +28,7 @@ Practice on MongoDB, Express, React, & Node Projects
 - npm install dotenv --save
 - npm i validator
 - npm install hbs
+- npm i bcryptjs
 - 
 
 
