@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -7,6 +8,7 @@ const hbs = require("hbs");
 require("./mongodb");
 // collection schema
 const RegForm = require("./modelSchema");
+const bcrypt = require('bcryptjs');
 
 
 // path
@@ -26,64 +28,96 @@ hbs.registerPartials(partialsPath);
 app.use(express.static(static_path));
 app.use(express.urlencoded({extended: false}));
 
-//
-
 app.get("/", (req, resp)=>{
-    resp.render("login");
+    resp.render("home");
 });
 app.get("/signup", (req, resp)=>{
     resp.render("signup");
+});
+app.get("/login", (req, resp)=>{
+    resp.render("login");
 });
 
 // create new user in our database
 app.post('/signup', async (req, res) => {
     try {
-        const data = {
-            name: req.body.name,
-            username: req.body.username,
-            password: req.body.password
+        const {name, username, password, vpassword} = req.body;
+
+        if(password === vpassword){
+            const data = new RegForm({
+                name: name,
+                username: username,
+                password: password,
+                vpassword: vpassword
+            });
+            //token generate
+            const token = await data.generateAuthToken();
+
+            const register = await data.save();
+            // console.log(register);
+            res.status(201).render("home")
+        }else{
+            res.send("Password are not matching");
         }
-        const result = await RegForm.insertMany([data]);
-        console.log(result);
-        res.render("home")
 
     } catch (error) {
         // res.send("Error Page")
         // console.log(error);
         res.status(400).send(error);
+        console.log(error);
     }
 });
 // login user in our database
 app.post('/login', async (req, res) => {
     try {
-        const check = await RegForm.findOne({username: req.body.username});
-        if(check.password === req.body.password && check.username === req.body.username){
-            res.render("home");
-        }else{
-            res.send("Wrong Username")
+        const {username, password} = req.body;
+
+        const check = await RegForm.findOne({username: username});
+        const isMatch = await bcrypt.compare(password, check.password);
+
+        const token = await check.generateAuthToken();
+        // console.log(token);
+
+        if(isMatch){
+            res.status(201).render("home");
+        }
+        else{
+            res.send("Invalid Password");
         }
 
     } catch (error) {
-        res.send("Invalid Username")
+        // alert("Invalid Username");
+        res.send("Invalid Username");
         // res.status(400).send(error);
     }
 });
 
 
 // bcryptjs imported
-const bcrypt = require('bcryptjs');
+// const securePassword  = async (password) =>{
 
-const securePassword  = async(password) =>{
+//    const passwordHash = await bcrypt.hash(password, 10);
+//    console.log(passwordHash);
 
-   const passwordHash = await bcrypt.hash(password, 10);
-   console.log(passwordHash);
+//    const passwordMatch = await bcrypt.compare(password, passwordHash);
+//    console.log(passwordMatch);
+// }
 
-   const passwordMatch = await bcrypt.compare(password, passwordHash);
-   console.log(passwordMatch);
-}
+// securePassword("thapa@123");
 
-securePassword("thapa@123");
 
+
+// json Web Token
+// const createToken = async() =>{
+//     const token = await jwt.sign({_id: "63b2f00d90c3288a6028950c"}, "secretKey63b2f00d90c3288a6028950c63b2f00d90c3288a6028950c", {
+//         expiresIn:  "3 seconds"
+//     })
+//     // console.log(token);
+
+//     const userVerify = await jwt.verify(token, "secretKey63b2f00d90c3288a6028950c63b2f00d90c3288a6028950c")
+//     console.log(userVerify);
+// }
+// createToken();
 
 app.listen(port, ()=>{
     console.log(`listening to the port localhost:${port}`);

@@ -3,7 +3,7 @@ const formOne = document.getElementById("formOne");
 const name = document.getElementById("name");
 const username = document.getElementById("username");
 const password = document.getElementById("password");
-const verfy_spassword = document.getElementById("verfy-password");
+const verfy_spassword = document.getElementById("vpassword");
 const reset = document.getElementById("reset");
 
 formOne.addEventListener('click', (e)=>{

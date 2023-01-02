@@ -25,10 +25,14 @@ Practice on MongoDB, Express, React, & Node Projects
 
 ## npm frequently packages used:
 - npm i express mongoose nodemon
-- npm install dotenv --save
 - npm i validator
 - npm install hbs
 - npm i bcryptjs
+// JSON Web Tokens (JWT)
+// doc: https://jwt.io/
+- npm i jsonwebtoken
+- npm i cookie-parser
+- npm i dotenv
 - 
 
 
