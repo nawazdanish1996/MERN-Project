@@ -4,11 +4,15 @@ const app = express();
 const port = process.env.PORT || 3000;
 const path = require("path");
 const hbs = require("hbs");
+const bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+const cookieParser = require("cookie-parser");
 //mongodb connected
 require("./mongodb");
 // collection schema
 const RegForm = require("./modelSchema");
-const bcrypt = require('bcryptjs');
+// auth
+const auth = require("./middleware/auth");
 
 
 // path
@@ -17,23 +21,31 @@ const viewsPath = path.join(__dirname, "../templates/views")
 const partialsPath = path.join(__dirname, "../templates/partials")
 // console.log("path"+ path.join(__dirname, "../public"));
 
-// app.use(express.urlencoded({extended: false}));
 // middleware
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({extended: false}));
 
 // view engine
 app.set("view engine", "hbs");
 app.set("views", viewsPath);
 hbs.registerPartials(partialsPath);
 app.use(express.static(static_path));
-app.use(express.urlencoded({extended: false}));
 
 app.get("/", (req, resp)=>{
-    resp.render("home");
+    resp.render("login");
 });
+
+app.get("/secret", auth, (req, resp)=>{
+    // cookie parser
+    console.log(`Cookie parser: ${req.cookies.jwt}`);
+    resp.render("secret");
+});
+
 app.get("/signup", (req, resp)=>{
     resp.render("signup");
 });
+
 app.get("/login", (req, resp)=>{
     resp.render("login");
 });
@@ -53,9 +65,18 @@ app.post('/signup', async (req, res) => {
             //token generate
             const token = await data.generateAuthToken();
 
+            // store jwt tokens in HTTP only cookies
+            // the value parameter may be a string or obj converted to JSON
+            // syntex: res.cookie(name, val, [options]);
+            res.cookie("jwt", token, {
+                expires: new Date(Date.now() + 30000),
+                httpOnly: true
+            });
+            console.log(cookie);
+
             const register = await data.save();
             // console.log(register);
-            res.status(201).render("home")
+            res.status(201).render("login")
         }else{
             res.send("Password are not matching");
         }
@@ -76,7 +97,14 @@ app.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, check.password);
 
         const token = await check.generateAuthToken();
-        // console.log(token);
+        console.log(token);
+
+        // cookie
+        res.cookie("jwt", token, {
+            expires: new Date(Date.now() + 9000000000000000),
+            httpOnly: true,
+            // secure: true
+        });
 
         if(isMatch){
             res.status(201).render("home");
@@ -87,8 +115,8 @@ app.post('/login', async (req, res) => {
 
     } catch (error) {
         // alert("Invalid Username");
-        res.send("Invalid Username");
-        // res.status(400).send(error);
+        // res.send("Invalid Username");
+        res.status(400).send(error);
     }
 });
 

@@ -33,6 +33,7 @@ Practice on MongoDB, Express, React, & Node Projects
 - npm i jsonwebtoken
 - npm i cookie-parser
 - npm i dotenv
+- npm i cookie-parser
 - 
 
 
